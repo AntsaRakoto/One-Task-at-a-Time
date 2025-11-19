@@ -4,5 +4,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="background">#fbf9ec</color>
     <color name="text_main">#545454</color>
+    <color name="beige_milieu">#ddb493</color>
+    <color name="beige_fonce">#c89f7d</color>
+    <color name="beige_clair">#f9e8d3</color>
+
+
 
 </resources>

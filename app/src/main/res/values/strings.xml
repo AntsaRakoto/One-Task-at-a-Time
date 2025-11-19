@@ -2,10 +2,12 @@
     <string name="app_name">PersonalApp</string>
     <string name="accueil">Application mobile pour le développement de vos projets</string>
     <string name="title_activity_login">LoginActivity</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
+    <string name="prompt_user">Nom d\'utilisateur</string>
+    <string name="prompt_password">Mot de passe </string>
+    <string name="action_sign_in">Se connecter / S\'inscrire</string>
+    <string name="action_sign_in_short">Se connecter</string>
+    <string name="connexion">Connectez-vous pour continuer</string>
+    <string name="prompt_email">Mail</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
