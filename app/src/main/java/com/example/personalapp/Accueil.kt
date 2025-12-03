@@ -15,14 +15,31 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class Accueil : AppCompatActivity() {
+    private lateinit var btnActivityProgres: Button
+    private lateinit var btnActivityProjet: Button
+    private lateinit var btnActivityTemps: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_accueil)
 
         val userNameTextView = findViewById<TextView>(R.id.user_name)
-        val btnActivityProjet = findViewById<Button>(R.id.btn_organisation)
-        val bthActivityTemps = findViewById<Button>(R.id.btn_temps_conseil)
-        val btnActivityProgres = findViewById<Button>(R.id.btn_avancement)
+        btnActivityProjet = findViewById<Button>(R.id.btn_organisation)
+        btnActivityTemps = findViewById<Button>(R.id.btn_temps_conseil)
+        btnActivityProgres = findViewById<Button>(R.id.btn_avancement)
+
+        btnActivityTemps.setOnClickListener {
+            val intent = Intent(this@Accueil, LoginActivity::class.java)
+            startActivity(intent)
+        }
+        btnActivityProjet.setOnClickListener {
+            val intent = Intent(this@Accueil, LoginActivity::class.java)
+            startActivity(intent)
+        }
+        btnActivityProgres.setOnClickListener {
+            val intent = Intent(this@Accueil, LoginActivity::class.java)
+            startActivity(intent)
+        }
 
         val nameFromIntent = intent.getStringExtra("username")
         if (!nameFromIntent.isNullOrBlank()) {
