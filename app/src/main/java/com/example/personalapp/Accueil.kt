@@ -29,7 +29,7 @@ class Accueil : AppCompatActivity() {
         btnActivityProgres = findViewById<Button>(R.id.btn_avancement)
 
         btnActivityTemps.setOnClickListener {
-            val intent = Intent(this@Accueil, LoginActivity::class.java)
+            val intent = Intent(this@Accueil, WeatherActivity::class.java)
             startActivity(intent)
         }
         btnActivityProjet.setOnClickListener {
