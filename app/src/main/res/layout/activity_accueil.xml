@@ -26,13 +26,13 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/backBtn"
+                android:id="@+id/profileBtn"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_centerVertical="true"
+                android:src="@drawable/ic_profile"
                 android:clickable="true"
-                android:focusable="true"
-                android:src="@drawable/ic_arrow_back" />
+                android:focusable="true"/>
 
             <TextView
                 android:id="@+id/user_name"
@@ -44,7 +44,6 @@
                 android:fontFamily="@font/merriweather_regular"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:src="@drawable/ic_profile"
                 android:clickable="true"
                 android:focusable="true"/>
 

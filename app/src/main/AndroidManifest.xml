@@ -29,6 +29,12 @@
             android:name=".ProjetListActivity"
             android:exported="false" />
         <activity
+            android:name=".ProjetDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TaskTimerActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
