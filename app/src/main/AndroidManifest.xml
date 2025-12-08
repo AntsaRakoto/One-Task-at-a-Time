@@ -23,6 +23,12 @@
             android:name=".WeatherActivity"
             android:exported="false" />
         <activity
+            android:name=".InputProjetActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProjetListActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

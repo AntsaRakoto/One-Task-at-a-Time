@@ -14,4 +14,5 @@
     <string name="login_failed">"Login failed"</string>
     <string name="login_success">"Login success"</string>
     <string name="loading_title">Texte de chargement</string>
+    <string name="prompt_projet">Nom du projet</string>
 </resources>

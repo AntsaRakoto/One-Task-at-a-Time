@@ -4,12 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.personalapp.data.UserDatabase
+import com.example.personalapp.data.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,7 +30,7 @@ class Accueil : AppCompatActivity() {
             startActivity(intent)
         }
         btnActivityProjet.setOnClickListener {
-            val intent = Intent(this@Accueil, LoginActivity::class.java)
+            val intent = Intent(this@Accueil, InputProjetActivity::class.java)
             startActivity(intent)
         }
         btnActivityProgres.setOnClickListener {
@@ -48,7 +45,7 @@ class Accueil : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            val db = UserDatabase.getDatabase(this@Accueil)
+            val db = AppDatabase.getDatabase(this@Accueil)
 
             val lastUser = withContext(Dispatchers.IO){
                 db.userDao().getLastUser()
