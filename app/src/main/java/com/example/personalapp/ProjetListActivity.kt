@@ -80,14 +80,58 @@ class ProjetListActivity : AppCompatActivity() {
                 vb.tvProjetName.text = p.projetName
                 vb.tvProjetDuration.text = "Durée : ${p.durationMinutes} min"
                 vb.tvProjetUser.text = "Par : ${p.userName}"
-                // Voir détail du projet
-                vb.root.setOnClickListener {
-                    val intent = Intent(this@ProjetListActivity, ProjetDetailActivity::class.java)
-                    intent.putExtra("PROJECT_ID", p.projetId)
-                    startActivity(intent)
+
+                // Affichage strike-through si terminé
+                if (p.isCompleted) {
+                    // Rayé
+                    vb.tvProjetName.paintFlags = vb.tvProjetName.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                    vb.tvProjetDuration.paintFlags = vb.tvProjetDuration.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                    vb.tvProjetUser.paintFlags = vb.tvProjetUser.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                    vb.btnComplete.isEnabled = false
+                    vb.btnComplete.alpha = 0.5f
+                    // empêcher l'ouverture du détail si tu veux
+                    vb.root.isClickable = false
+                } else {
+                    // Normal
+                    vb.tvProjetName.paintFlags = vb.tvProjetName.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                    vb.tvProjetDuration.paintFlags = vb.tvProjetDuration.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                    vb.tvProjetUser.paintFlags = vb.tvProjetUser.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                    vb.btnComplete.isEnabled = true
+                    vb.btnComplete.alpha = 1.0f
+                    vb.root.isClickable = true
                 }
 
+                // Clic pour voir détail (uniquement si pas terminé)
+                vb.root.setOnClickListener {
+                    if (!p.isCompleted) {
+                        val intent = Intent(this@ProjetListActivity, ProjetDetailActivity::class.java)
+                        intent.putExtra("PROJECT_ID", p.projetId)
+                        startActivity(intent)
+                    }
+                }
+
+                // Clic sur "Terminer" -> mettre à jour la BDD
+                vb.btnComplete.setOnClickListener {
+                    // sécurité : désactiver pour éviter double clic
+                    vb.btnComplete.isEnabled = false
+                    lifecycleScope.launch {
+                        // Construire l'entité Projet pour update
+                        val updatedProjet = com.example.personalapp.data.Projet(
+                            id = p.projetId,
+                            name = p.projetName,
+                            durationMinutes = p.durationMinutes,
+                            userId = p.userId,
+                            isCompleted = true
+                        )
+                        withContext(Dispatchers.IO) {
+                            db.projetDao().update(updatedProjet)
+                        }
+                        // Recharger la liste (appel suspend)
+                        loadProjets()
+                    }
+                }
             }
         }
+
     }
 }

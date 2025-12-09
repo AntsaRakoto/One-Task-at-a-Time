@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
@@ -69,8 +70,10 @@ class ProjetDetailActivity : AppCompatActivity() {
 
     private fun observeTaches() {
         lifecycleScope.launch {
-            db.tacheDao().getTachesForProjectFlow(projectId).collect { taches ->
-                adapter.updateList(taches)
+            repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                db.tacheDao().getTachesForProjectFlow(projectId).collect { taches ->
+                    adapter.updateList(taches)
+                }
             }
         }
     }
@@ -102,11 +105,9 @@ class ProjetDetailActivity : AppCompatActivity() {
     private fun showAddTacheDialog() {
         // On lance une coroutine pour récupérer les données en IO avant d'ouvrir le dialogue
         lifecycleScope.launch {
-            // Récupérations en IO
             val (totalMinutes, usedMinutes) = withContext(Dispatchers.IO) {
-                // Récupère le projet (adapte le nom de la méthode si besoin)
-                val projet = db.projetDao().getProjetById(projectId) // <-- adapte si nécessaire
-                // Si getProjetById retourne null, gère-le ensuite
+                // Récupère le projet
+                val projet = db.projetDao().getProjetById(projectId)
                 val total = projet?.durationMinutes ?: 0
 
                 // Somme des durées des tâches existantes
@@ -118,10 +119,8 @@ class ProjetDetailActivity : AppCompatActivity() {
 
             val remaining = totalMinutes - usedMinutes
 
-            // Ouvre le dialogue sur le thread UI
             withContext(Dispatchers.Main) {
                 if (totalMinutes <= 0) {
-                    // projet sans durée définie : on peut afficher un message ou autoriser l'ajout
                     Toast.makeText(this@ProjetDetailActivity,
                         "Durée totale du projet non définie. Définissez la durée du projet d'abord.",
                         Toast.LENGTH_LONG).show()
@@ -158,7 +157,7 @@ class ProjetDetailActivity : AppCompatActivity() {
                 }
 
                 builder.setView(container)
-                builder.setPositiveButton("Ajouter", null) // on override après pour validation
+                builder.setPositiveButton("Ajouter", null)
                 builder.setNegativeButton("Annuler", null)
 
                 val dialog = builder.create()

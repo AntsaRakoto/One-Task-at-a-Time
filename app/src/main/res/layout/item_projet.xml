@@ -39,5 +39,11 @@
             android:layout_marginTop="6dp"
             android:textColor="#666"/>
 
+        <Button
+            android:id="@+id/btnComplete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Terminer" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

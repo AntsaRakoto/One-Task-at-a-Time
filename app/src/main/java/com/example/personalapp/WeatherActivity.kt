@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,7 @@ import com.example.personalapp.network.WeatherService
 import com.example.personalapp.repository.WeatherRepository
 import androidx.lifecycle.lifecycleScope
 import com.example.personalapp.data.AppDatabase
+import com.example.personalapp.utils.setupProfileLogout
 import kotlinx.coroutines.launch
 
 class WeatherActivity : AppCompatActivity() {
@@ -64,12 +66,14 @@ class WeatherActivity : AppCompatActivity() {
 
         // profile button : exemple placeholder
         binding.topToolbar.findViewById<View>(R.id.profileBtn)?.setOnClickListener {
-            Toast.makeText(this, "Profil (à implémenter)", Toast.LENGTH_SHORT).show()
+            val profileBtn: ImageView = findViewById(R.id.profileBtn)
+            setupProfileLogout(this, profileBtn)
         }
 
         // btn_projet : action exemple
         binding.btnProjet.setOnClickListener {
-            Toast.makeText(this, "Voir projet actuel (à implémenter)", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, ProjetListActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -94,9 +98,9 @@ class WeatherActivity : AppCompatActivity() {
                 binding.subtext.text = when {
                     s.temp == null -> "Chargement des informations météo..."
                     s.temp <= 5 -> "Un bon moment pour te concentrer sur tes objectifs et organiser ton espace."
-                    s.temp <= 15 -> "C'est l'heure de bouger, fais tes appels ou travaille depuis un lieu inspirant, n'oublie t'apporter un petit pull."
+                    s.temp <= 15 -> "C'est l'heure de bouger, fais tes appels et travaille depuis un lieu inspirant, n'oublie pas d'apporter un petit pull."
                     s.temp <= 25 -> "Journée agréable, idéal pour sortir et travailler dehors."
-                    else -> "Il fait chaud aujourd'hui, n'oublie pas de t'hydrater, restes à l'ombre!"
+                    else -> "Il fait chaud aujourd'hui, n'oublie pas de t'hydrater, reste à l'ombre et fais des tâches légères!"
                 }
 
 

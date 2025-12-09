@@ -55,9 +55,34 @@ class Accueil : AppCompatActivity() {
             startActivity(intent)
         }
         btnActivityProjet.setOnClickListener {
-            val intent = Intent(this@Accueil, InputProjetActivity::class.java)
-            startActivity(intent)
+            val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            val currentUserId = prefs.getLong("current_user_id", -1L)
+            if (currentUserId == -1L) {
+                // Pas connecté
+                val intent = Intent(this@Accueil, LoginActivity::class.java)
+                startActivity(intent)
+                return@setOnClickListener
+            }
+
+            // Vérifier en base s'il existe un projet actif pour l'utilisateur
+            lifecycleScope.launch {
+                val db = AppDatabase.getDatabase(this@Accueil)
+                val activeProject = withContext(Dispatchers.IO) {
+                    db.projetDao().getActiveProjectForUser(currentUserId)
+                }
+
+                if (activeProject != null) {
+                    // Un projet actif existe
+                    val intent = Intent(this@Accueil, ProjetListActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    // Pas de projet actif -> créer un nouveau
+                    val intent = Intent(this@Accueil, InputProjetActivity::class.java)
+                    startActivity(intent)
+                }
+            }
         }
+
         btnActivityProgres.setOnClickListener {
             val intent = Intent(this@Accueil, LoginActivity::class.java)
             startActivity(intent)

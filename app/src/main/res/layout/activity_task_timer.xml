@@ -5,13 +5,12 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:padding="16dp">
+    android:background="@color/background">
 
     <!-- TOOLBAR / HEADER -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/top_toolbar"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="65dp"
         android:background="@drawable/topbar_bg"
         android:paddingStart="12dp"
@@ -19,9 +18,7 @@
         app:contentInsetStartWithNavigation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/titleTask"
-        >
+        app:layout_constraintTop_toTopOf="parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -49,143 +46,145 @@
     </androidx.appcompat.widget.Toolbar>
 
     <!-- Title "Faire la tâche" -->
-<TextView
-android:id="@+id/titleTask"
-android:layout_width="0dp"
-android:layout_height="wrap_content"
-android:text="Faire la tâche :"
-android:textSize="22sp"
-android:textStyle="bold"
-android:gravity="center"
-android:textColor="@color/text_main"
-app:layout_constraintTop_toBottomOf="@id/top_toolbar"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintEnd_toEndOf="parent"
-android:layout_marginTop="18dp"/>
+    <TextView
+        android:id="@+id/titleTask"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Faire la tâche :"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="@color/text_main"
+        app:layout_constraintTop_toBottomOf="@id/top_toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="18dp"/>
 
-<TextView
-android:id="@+id/subTitle"
-android:layout_width="0dp"
-android:layout_height="wrap_content"
-android:text="Implémenter la page d'accueil"
-android:textSize="16sp"
-android:gravity="center"
-android:textColor="@color/text_main"
-app:layout_constraintTop_toBottomOf="@id/titleTask"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintEnd_toEndOf="parent"
-android:layout_marginTop="6dp"/>
+    <TextView
+        android:id="@+id/subTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Implémenter la page d'accueil"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:textColor="@color/text_main"
+        app:layout_constraintTop_toBottomOf="@id/titleTask"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="6dp"/>
 
     <!-- Card contenant le minuteur -->
-<androidx.cardview.widget.CardView
-android:id="@+id/timerCard"
-android:layout_width="0dp"
-android:layout_height="100dp"
-app:cardCornerRadius="18dp"
-app:cardElevation="4dp"
-app:cardUseCompatPadding="true"
-android:layout_marginTop="18dp"
-app:layout_constraintTop_toBottomOf="@id/subTitle"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintEnd_toEndOf="parent"
-android:layout_marginStart="24dp"
-android:layout_marginEnd="24dp">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/timerCard"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
+        android:layout_marginTop="18dp"
+        app:layout_constraintTop_toBottomOf="@id/subTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp">
 
-<TextView
-    android:id="@+id/timerText"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:text="74 : 47"
-    android:textSize="36sp"
-    android:textStyle="bold"
-    android:textColor="@color/text_main"/>
-</androidx.cardview.widget.CardView>
+        <TextView
+            android:id="@+id/timerText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="00:00"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_main"/>
+    </androidx.cardview.widget.CardView>
 
-    <!-- Bouton principal Start / Pause -->
-<Button
-android:id="@+id/btnStartPause"
-android:layout_width="220dp"
-android:layout_height="48dp"
-android:text="Pause"
-android:textSize="18sp"
-android:layout_marginTop="14dp"
-android:backgroundTint="@color/beige_milieu"
-android:textColor="@android:color/white"
-app:layout_constraintTop_toBottomOf="@id/timerCard"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintEnd_toEndOf="parent"/>
+    <!-- Bouton principal Start / Indicateur -->
+    <Button
+        android:id="@+id/btnStartPause"
+        android:layout_width="220dp"
+        android:layout_height="48dp"
+        android:text="Start"
+        android:textSize="18sp"
+        android:layout_marginTop="14dp"
+        android:backgroundTint="@color/beige_milieu"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/timerCard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- Section Pauses -->
-<TextView
-android:id="@+id/pausesLabel"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Faire une pause :"
-android:textSize="16sp"
-android:textColor="@color/text_main"
-app:layout_constraintTop_toBottomOf="@id/btnStartPause"
-app:layout_constraintStart_toStartOf="parent"
-android:layout_marginTop="24dp"
-android:layout_marginStart="8dp"/>
+    <TextView
+        android:id="@+id/pausesLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Faire une pause :"
+        android:textSize="16sp"
+        android:textColor="@color/text_main"
+        app:layout_constraintTop_toBottomOf="@id/btnStartPause"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="8dp"/>
 
     <!-- Boutons de pause alignés horizontalement -->
-<LinearLayout
-android:id="@+id/pauseButtons"
-android:layout_width="0dp"
-android:layout_height="wrap_content"
-android:orientation="horizontal"
-android:gravity="center"
-android:layout_marginTop="12dp"
-app:layout_constraintTop_toBottomOf="@id/pausesLabel"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintEnd_toEndOf="parent">
+    <LinearLayout
+        android:id="@+id/pauseButtons"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/pausesLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
 
-<Button
-    android:id="@+id/btnPause5"
-    android:layout_width="0dp"
-    android:layout_weight="1"
-    android:layout_height="44dp"
-    android:text="5min"
-    android:layout_margin="8dp"
-    android:background="@drawable/button_outline"
-    android:textColor="@color/text_main"/>
+        <Button
+            android:id="@+id/btn5"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:text="5min"
+            android:layout_margin="8dp"
+            android:background="@drawable/button_outline"
+            android:textColor="@color/text_main"/>
 
-<Button
-    android:id="@+id/btnPause10"
-    android:layout_width="0dp"
-    android:layout_weight="1"
-    android:layout_height="44dp"
-    android:text="10min"
-    android:layout_margin="8dp"
-    android:background="@drawable/button_outline"
-    android:textColor="@color/text_main"/>
+        <Button
+            android:id="@+id/btn10"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:text="10min"
+            android:layout_margin="8dp"
+            android:background="@drawable/button_outline"
+            android:textColor="@color/text_main"/>
 
-<Button
-    android:id="@+id/btnPause15"
-    android:layout_width="0dp"
-    android:layout_weight="1"
-    android:layout_height="44dp"
-    android:text="15min"
-    android:layout_margin="8dp"
-    android:background="@drawable/button_outline"
-    android:textColor="@color/text_main"/>
-</LinearLayout>
+        <Button
+            android:id="@+id/btn15"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:text="15min"
+            android:layout_margin="8dp"
+            android:background="@drawable/button_outline"
+            android:textColor="@color/text_main"/>
+    </LinearLayout>
 
     <!-- RecyclerView pour la liste des tâches (sous tout ça) -->
-<androidx.recyclerview.widget.RecyclerView
-android:id="@+id/tasksRecycler"
-android:layout_width="0dp"
-android:layout_height="0dp"
-android:clipToPadding="false"
-android:paddingTop="12dp"
-android:paddingBottom="24dp"
-app:layout_constraintTop_toBottomOf="@id/pauseButtons"
-app:layout_constraintBottom_toBottomOf="parent"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintEnd_toEndOf="parent"
-android:layout_marginTop="18dp"
-android:layout_marginStart="8dp"
-android:layout_marginEnd="8dp"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tasksRecycler"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingTop="12dp"
+        android:paddingBottom="24dp"
+        app:layout_constraintTop_toBottomOf="@id/pauseButtons"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="18dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

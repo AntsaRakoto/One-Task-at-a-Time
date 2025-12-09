@@ -19,5 +19,6 @@ data class Projet(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val durationMinutes: Int,
-    val userId: Long
+    val userId: Long,
+    val isCompleted: Boolean = false
 )
