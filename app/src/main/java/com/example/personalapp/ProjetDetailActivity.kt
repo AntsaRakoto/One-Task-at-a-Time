@@ -1,0 +1,212 @@
+package com.example.personalapp
+
+import android.os.Bundle
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
+import com.example.personalapp.data.AppDatabase
+import com.example.personalapp.data.Tache
+import com.example.personalapp.models.TacheAdapter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+
+
+class ProjetDetailActivity : AppCompatActivity() {
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: TacheAdapter
+    private var tacheList = mutableListOf<Tache>()
+
+    private var projectId: Long = -1L
+    private lateinit var db: AppDatabase
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_projet_detail)
+
+        db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "app_database"
+        ).fallbackToDestructiveMigration(false).build()
+
+        projectId = intent.getLongExtra("PROJECT_ID", -1L)
+
+        recyclerView = findViewById(R.id.recyclerViewTaches)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        adapter = TacheAdapter(
+            tacheList,
+            onCheckedChange = { tache, completed -> updateTache(tache.copy(completed = completed)) },
+            onItemClick = { tache ->
+                val intent = android.content.Intent(this, TaskTimerActivity::class.java).apply {
+                    putExtra("TASK_ID", tache.id)
+                    putExtra("TASK_NAME", tache.name)
+                    putExtra("TASK_DURATION", tache.durationMinutes)
+                    putExtra("PROJECT_ID", projectId)
+                }
+                startActivity(intent)
+            }
+        )
+        recyclerView.adapter = adapter
+
+        findViewById<FloatingActionButton>(R.id.fabAddTache).setOnClickListener {
+            showAddTacheDialog()
+        }
+
+        observeTaches()
+    }
+
+    private fun observeTaches() {
+        lifecycleScope.launch {
+            db.tacheDao().getTachesForProjectFlow(projectId).collect { taches ->
+                adapter.updateList(taches)
+            }
+        }
+    }
+
+    private fun updateTache(tache: Tache) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            db.tacheDao().update(tache)
+        }
+    }
+
+
+    private fun loadTaches() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val taches = db.tacheDao().getTachesForProject(projectId)
+            withContext(Dispatchers.Main) {
+                adapter.updateList(taches)
+            }
+        }
+    }
+
+
+    private fun addTache(tache: Tache) {
+        CoroutineScope(Dispatchers.IO).launch {
+            db.tacheDao().insert(tache)
+            loadTaches()
+        }
+    }
+
+    private fun showAddTacheDialog() {
+        // On lance une coroutine pour récupérer les données en IO avant d'ouvrir le dialogue
+        lifecycleScope.launch {
+            // Récupérations en IO
+            val (totalMinutes, usedMinutes) = withContext(Dispatchers.IO) {
+                // Récupère le projet (adapte le nom de la méthode si besoin)
+                val projet = db.projetDao().getProjetById(projectId) // <-- adapte si nécessaire
+                // Si getProjetById retourne null, gère-le ensuite
+                val total = projet?.durationMinutes ?: 0
+
+                // Somme des durées des tâches existantes
+                val taches = db.tacheDao().getTachesForProject(projectId)
+                val used = taches.sumOf { it.durationMinutes }
+
+                total to used
+            }
+
+            val remaining = totalMinutes - usedMinutes
+
+            // Ouvre le dialogue sur le thread UI
+            withContext(Dispatchers.Main) {
+                if (totalMinutes <= 0) {
+                    // projet sans durée définie : on peut afficher un message ou autoriser l'ajout
+                    Toast.makeText(this@ProjetDetailActivity,
+                        "Durée totale du projet non définie. Définissez la durée du projet d'abord.",
+                        Toast.LENGTH_LONG).show()
+                    return@withContext
+                }
+
+                if (remaining <= 0) {
+                    Toast.makeText(this@ProjetDetailActivity,
+                        "Temps total du projet déjà utilisé (0 min restant).",
+                        Toast.LENGTH_LONG).show()
+                    return@withContext
+                }
+
+                val builder = AlertDialog.Builder(this@ProjetDetailActivity)
+                builder.setTitle("Ajouter une tâche")
+
+                val view = layoutInflater.inflate(R.layout.dialog_add_tache, null)
+                val edtName = view.findViewById<EditText>(R.id.edtTacheName)
+                val edtDuration = view.findViewById<EditText>(R.id.edtTacheDuration)
+
+                // Message informatif avec le temps restant
+                val infoView = TextView(this@ProjetDetailActivity).apply {
+                    text = "Temps restant : $remaining min"
+                    setPadding(16, 8, 16, 8)
+                }
+
+                // On peut insérer l'info au-dessus des EditText (LinearLayout vertical) :
+                // Ici on compose une vue simple : un container vertical avec infoView + inflated view
+                val container = LinearLayout(this@ProjetDetailActivity).apply {
+                    orientation = LinearLayout.VERTICAL
+                    setPadding(16, 8, 16, 8)
+                    addView(infoView)
+                    addView(view)
+                }
+
+                builder.setView(container)
+                builder.setPositiveButton("Ajouter", null) // on override après pour validation
+                builder.setNegativeButton("Annuler", null)
+
+                val dialog = builder.create()
+                dialog.setOnShowListener {
+                    val btn = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                    btn.setOnClickListener {
+                        val name = edtName.text.toString().trim()
+                        val duration = edtDuration.text.toString().toIntOrNull() ?: 0
+
+                        if (name.isEmpty()) {
+                            Toast.makeText(this@ProjetDetailActivity, "Donne un nom à la tâche.", Toast.LENGTH_SHORT).show()
+                            return@setOnClickListener
+                        }
+                        if (duration <= 0) {
+                            Toast.makeText(this@ProjetDetailActivity, "La durée doit être > 0.", Toast.LENGTH_SHORT).show()
+                            return@setOnClickListener
+                        }
+                        if (duration > remaining) {
+                            Toast.makeText(this@ProjetDetailActivity,
+                                "La durée dépasse le temps restant ($remaining min).", Toast.LENGTH_LONG).show()
+                            return@setOnClickListener
+                        }
+
+                        // OK : on insère la tâche en IO, puis on recharge la liste
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            db.tacheDao().insert(
+                                Tache(
+                                    name = name,
+                                    durationMinutes = duration,
+                                    completed = false,
+                                    projectId = projectId
+                                )
+                            )
+                            // recharge les tâches (ou appelle loadTaches())
+                            val taches = db.tacheDao().getTachesForProject(projectId)
+                            withContext(Dispatchers.Main) {
+                                adapter.updateList(taches)
+                                dialog.dismiss()
+                                Toast.makeText(this@ProjetDetailActivity,
+                                    "Tâche ajoutée (${duration} min).", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+
+                dialog.show()
+            }
+        }
+    }
+
+}

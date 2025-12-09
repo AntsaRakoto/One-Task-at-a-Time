@@ -1,0 +1,36 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="240dp"
+    android:viewportWidth="120"
+    android:viewportHeight="240">
+
+    <!-- Contour du thermomètre -->
+    <path
+        android:fillColor="#5B4636"
+        android:pathData="M60,20
+                          a20,20 0 0 0 -20,20
+                          v100
+                          a30,30 0 1 0 40,0
+                          v-100
+                          a20,20 0 0 0 -20,-20z" />
+
+    <!-- Intérieur blanc du tube -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M60,30
+                          a10,10 0 0 0 -10,10
+                          v95
+                          a20,20 0 1 0 20,0
+                          v-95
+                          a10,10 0 0 0 -10,-10z" />
+
+    <!-- Niveau de température (bleu) -->
+    <path
+        android:fillColor="#4BA8F2"
+        android:pathData="M60,90
+                          a20,20 0 1 0 20,20
+                          v-70
+                          a10,10 0 0 0 -20,0
+                          v70z" />
+
+</vector>
