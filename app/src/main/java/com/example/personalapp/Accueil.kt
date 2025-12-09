@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.personalapp.data.AppDatabase
@@ -31,7 +32,6 @@ class Accueil : AppCompatActivity() {
         val profileBtn: ImageView = findViewById(R.id.profileBtn)
         setupProfileLogout(this, profileBtn)
 
-
         val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         val currentUserId = prefs.getLong("current_user_id", -1L) // -1 = pas connecté
 
@@ -41,7 +41,7 @@ class Accueil : AppCompatActivity() {
             startActivity(intent)
             finish()
         } else {
-            // L'utilisateur est connecté → tu peux récupérer ses infos
+            // L'utilisateur est connecté
             lifecycleScope.launch {
                 val user = AppDatabase.getDatabase(this@Accueil).userDao().getUserById(currentUserId)
                 if (user != null) {
@@ -84,8 +84,32 @@ class Accueil : AppCompatActivity() {
         }
 
         btnActivityProgres.setOnClickListener {
-            val intent = Intent(this@Accueil, LoginActivity::class.java)
-            startActivity(intent)
+            val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            val currentUserId = prefs.getLong("current_user_id", -1L)
+            if (currentUserId == -1L) {
+                // Pas connecté
+                val intent = Intent(this@Accueil, LoginActivity::class.java)
+                startActivity(intent)
+                return@setOnClickListener
+            }
+
+            // Vérifier en base s'il existe un projet actif pour l'utilisateur
+            lifecycleScope.launch {
+                val db = AppDatabase.getDatabase(this@Accueil)
+                val activeProject = withContext(Dispatchers.IO) {
+                    db.projetDao().getActiveProjectForUser(currentUserId)
+                }
+
+                if (activeProject != null) {
+                    // Un projet actif existe
+                    val intent = Intent(this@Accueil, ProgressionActivity::class.java)
+                    intent.putExtra("PROJECT_ID", activeProject.id)
+                    startActivity(intent)
+                } else {
+                    // Pas de projet actif -> message
+                    Toast.makeText(this@Accueil, "Aucun projet actif", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         val nameFromIntent = intent.getStringExtra("username")

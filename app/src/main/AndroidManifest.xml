@@ -35,6 +35,9 @@
             android:name=".TaskTimerActivity"
             android:exported="false" />
         <activity
+            android:name=".ProgressionActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
