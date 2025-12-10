@@ -42,7 +42,7 @@ class TaskTimerActivity : AppCompatActivity() {
     private var hasTaskStarted: Boolean = false
     private var isBreakRunning: Boolean = false
 
-    // RecyclerView (optionnel: affichage des taches du projet)
+    // RecyclerView
     private lateinit var recycler: RecyclerView
     private lateinit var adapter: TacheAdapter
 

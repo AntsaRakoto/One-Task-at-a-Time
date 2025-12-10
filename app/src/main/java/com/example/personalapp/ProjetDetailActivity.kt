@@ -2,6 +2,7 @@ package com.example.personalapp
 
 import android.os.Bundle
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -15,6 +16,7 @@ import androidx.room.Room
 import com.example.personalapp.data.AppDatabase
 import com.example.personalapp.data.Tache
 import com.example.personalapp.models.TacheAdapter
+import com.example.personalapp.utils.setupProfileLogout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,6 +36,14 @@ class ProjetDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_projet_detail)
+
+        val profileBtn: ImageView = findViewById(R.id.profileBtn)
+        setupProfileLogout(this, profileBtn)
+
+        val backBtn: ImageView = findViewById(R.id.backBtn)
+        backBtn.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
 
         db = Room.databaseBuilder(
             applicationContext,

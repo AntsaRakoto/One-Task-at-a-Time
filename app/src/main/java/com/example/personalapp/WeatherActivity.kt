@@ -18,7 +18,9 @@ import com.example.personalapp.repository.WeatherRepository
 import androidx.lifecycle.lifecycleScope
 import com.example.personalapp.data.AppDatabase
 import com.example.personalapp.utils.setupProfileLogout
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WeatherActivity : AppCompatActivity() {
 
@@ -59,21 +61,42 @@ class WeatherActivity : AppCompatActivity() {
     }
 
     private fun setupUiActions() {
-        // back button (si tu veux finir l'activity)
         binding.topToolbar.findViewById<View>(R.id.backBtn)?.setOnClickListener {
             finish()
         }
 
-        // profile button : exemple placeholder
         binding.topToolbar.findViewById<View>(R.id.profileBtn)?.setOnClickListener {
             val profileBtn: ImageView = findViewById(R.id.profileBtn)
             setupProfileLogout(this, profileBtn)
         }
 
-        // btn_projet : action exemple
         binding.btnProjet.setOnClickListener {
-            val intent = Intent(this, ProjetListActivity::class.java)
-            startActivity(intent)
+            val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            val currentUserId = prefs.getLong("current_user_id", -1L)
+            if (currentUserId == -1L) {
+                // Pas connecté
+                val intent = Intent(this@WeatherActivity, LoginActivity::class.java)
+                startActivity(intent)
+                return@setOnClickListener
+            }
+
+            // Vérifier en base s'il existe un projet actif pour l'utilisateur
+            lifecycleScope.launch {
+                val db = AppDatabase.getDatabase(this@WeatherActivity)
+                val activeProject = withContext(Dispatchers.IO) {
+                    db.projetDao().getActiveProjectForUser(currentUserId)
+                }
+
+                if (activeProject != null) {
+                    // Un projet actif existe
+                    val intent = Intent(this@WeatherActivity, ProjetListActivity::class.java)
+                    intent.putExtra("PROJECT_ID", activeProject.id)
+                    startActivity(intent)
+                } else {
+                    // Pas de projet actif -> message
+                    Toast.makeText(this@WeatherActivity, "Aucun projet actif", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

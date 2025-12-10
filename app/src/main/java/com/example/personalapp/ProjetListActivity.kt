@@ -3,7 +3,9 @@ package com.example.personalapp
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.example.personalapp.databinding.ActivityProjetListBinding
 import com.example.personalapp.databinding.ItemProjetBinding
+import com.example.personalapp.utils.setupProfileLogout
 
 class ProjetListActivity : AppCompatActivity() {
 
@@ -32,6 +35,11 @@ class ProjetListActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.backBtn.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
+        // Déconnexion
+        binding.topToolbar.findViewById<View>(R.id.profileBtn)?.setOnClickListener {
+            val profileBtn: ImageView = findViewById(R.id.profileBtn)
+            setupProfileLogout(this, profileBtn)
+        }
         // RecyclerView setup
         adapter = ProjetAdapter()
         binding.recyclerProjets.layoutManager = LinearLayoutManager(this)
