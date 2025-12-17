@@ -97,7 +97,6 @@ class TaskTimerActivity : AppCompatActivity() {
             // initialisation du remaining (en ms)
             taskRemainingMillis = taskDurationMin * 60L * 1000L
             updateTimerText(taskRemainingMillis)
-            // charger la liste des taches du projet si tu veux l'afficher
             loadTaches()
         }
 
@@ -107,8 +106,6 @@ class TaskTimerActivity : AppCompatActivity() {
                 // Lance le minuteur de la tâche
                 startTaskTimer(taskRemainingMillis)
                 hasTaskStarted = true
-                // après le premier démarrage, on rend le bouton "inactif" car la pause doit se faire
-                // via les boutons 5/10/15. On change le texte pour indiquer l'état.
                 btnStart.isEnabled = false
                 btnStart.text = "En cours"
             }
@@ -137,30 +134,23 @@ class TaskTimerActivity : AppCompatActivity() {
                 // tâche terminée -> Marquer completed en BDD
                 lifecycleScope.launch(Dispatchers.IO) {
                     if (taskId != -1L) {
-                        val t = db.tacheDao().getById(taskId)
-                        t?.let {
-                            db.tacheDao().update(it.copy(completed = true))
+                        val rows = withContext(Dispatchers.IO) {
+                            db.tacheDao().updateCompleted(taskId, true)
                         }
+                        android.util.Log.d("TaskTimer", "Marked task $taskId completed rows=$rows")
                     }
-                    // Toast sur Main
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@TaskTimerActivity, "La tâche est terminée.", Toast.LENGTH_LONG).show()
-                        // état UI : tâche finie -> réinitialiser bouton start (désactivé)
-                        btnStart.isEnabled = false
-                        btnStart.text = "Terminée"
-                        // rendre inactifs les boutons de break
-                        setBreakButtonsEnabled(false)
-                    }
+                    Toast.makeText(this@TaskTimerActivity, "La tâche est terminée.", Toast.LENGTH_LONG).show()
+                    btnStart.isEnabled = false
+                    btnStart.text = "Terminée"
+                    setBreakButtonsEnabled(false)
+                    loadTaches()
+
                 }
             }
         }.start()
     }
 
     private fun startBreakMinutes(minutes: Int) {
-        // Break possible uniquement si :
-        // - la tâche a démarré au moins une fois (hasTaskStarted)
-        // - il reste du temps de tâche (taskRemainingMillis > 0)
-        // - aucun break n'est en cours
         if (!hasTaskStarted) {
             Toast.makeText(this, "Démarre d'abord la tâche (Start).", Toast.LENGTH_SHORT).show()
             return

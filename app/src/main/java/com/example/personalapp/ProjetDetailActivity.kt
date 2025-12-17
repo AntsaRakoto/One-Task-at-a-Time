@@ -88,11 +88,21 @@ class ProjetDetailActivity : AppCompatActivity() {
         }
     }
 
+
     private fun updateTache(tache: Tache) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            db.tacheDao().update(tache)
+        lifecycleScope.launch {
+            // debug log
+            android.util.Log.d("ProjetDetail", "updateTache id=${tache.id} completed=${tache.completed}")
+            val rows = withContext(Dispatchers.IO) {
+                db.tacheDao().updateCompleted(tache.id, tache.completed)
+            }
+            android.util.Log.d("ProjetDetail", "rows affected = $rows")
+            withContext(Dispatchers.Main) {
+                adapter.updateItem(tache)
+            }
         }
     }
+
 
 
     private fun loadTaches() {
@@ -113,7 +123,6 @@ class ProjetDetailActivity : AppCompatActivity() {
     }
 
     private fun showAddTacheDialog() {
-        // On lance une coroutine pour récupérer les données en IO avant d'ouvrir le dialogue
         lifecycleScope.launch {
             val (totalMinutes, usedMinutes) = withContext(Dispatchers.IO) {
                 // Récupère le projet
@@ -157,8 +166,6 @@ class ProjetDetailActivity : AppCompatActivity() {
                     setPadding(16, 8, 16, 8)
                 }
 
-                // On peut insérer l'info au-dessus des EditText (LinearLayout vertical) :
-                // Ici on compose une vue simple : un container vertical avec infoView + inflated view
                 val container = LinearLayout(this@ProjetDetailActivity).apply {
                     orientation = LinearLayout.VERTICAL
                     setPadding(16, 8, 16, 8)
@@ -190,8 +197,6 @@ class ProjetDetailActivity : AppCompatActivity() {
                                 "La durée dépasse le temps restant ($remaining min).", Toast.LENGTH_LONG).show()
                             return@setOnClickListener
                         }
-
-                        // OK : on insère la tâche en IO, puis on recharge la liste
                         lifecycleScope.launch(Dispatchers.IO) {
                             db.tacheDao().insert(
                                 Tache(
@@ -201,7 +206,6 @@ class ProjetDetailActivity : AppCompatActivity() {
                                     projectId = projectId
                                 )
                             )
-                            // recharge les tâches (ou appelle loadTaches())
                             val taches = db.tacheDao().getTachesForProject(projectId)
                             withContext(Dispatchers.Main) {
                                 adapter.updateList(taches)

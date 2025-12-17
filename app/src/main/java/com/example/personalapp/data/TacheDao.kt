@@ -15,13 +15,13 @@ interface TacheDao {
     suspend fun getById(id: Long): Tache?
 
     @Query("UPDATE taches SET completed = :completed WHERE id = :id")
-    fun updateCompleted(id: Long, completed: Boolean)
+    suspend fun updateCompleted(id: Long, completed: Boolean): Int
     @Update
     suspend fun update(tache: Tache)
 
     @Delete
     suspend fun delete(tache: Tache)
 
-    @Query("SELECT * FROM taches WHERE projectId = :projectId ORDER BY name")
+    @Query("SELECT * FROM taches WHERE projectId = :projectId")
     suspend fun getTachesForProject(projectId: Long): List<Tache>
 }

@@ -26,8 +26,6 @@ class WeatherActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityWeatherBinding
 
-
-    // create ViewModel using factory (injecting repository)
     private val viewModel: WeatherViewModel by viewModels {
         val service = RetrofitClient.retrofit.create(WeatherService::class.java)
         val repo = WeatherRepository(service, BuildConfig.OPENWEATHER_API_KEY)
@@ -42,7 +40,6 @@ class WeatherActivity : AppCompatActivity() {
         setupUiActions()
         observeViewModel()
 
-        // Lancement initial : tu peux remplacer "London" par "Paris" ou coord
         viewModel.loadCity("Paris,FR")
 
         val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
@@ -126,26 +123,19 @@ class WeatherActivity : AppCompatActivity() {
                     else -> "Il fait chaud aujourd'hui, n'oublie pas de t'hydrater, reste à l'ombre et fais des tâches légères!"
                 }
 
-
-
-                // Icon : utiliser l'icône fournie par OpenWeather si présente,
-                // sinon conserver ton drawable local (weather_froid)
                 if (!s.icon.isNullOrEmpty()) {
                     val iconUrl = "https://openweathermap.org/img/wn/${s.icon}@4x.png"
                     Glide.with(this@WeatherActivity)
                         .load(iconUrl)
-                        .placeholder(R.drawable.weather_froid) // ton drawable par défaut
+                        .placeholder(R.drawable.weather_froid)
                         .into(binding.imageThermometer)
                 } else {
                     binding.imageThermometer.setImageResource(R.drawable.weather_froid)
                 }
-
-                // Optionnel : af ficher erreur
                 if (!s.error.isNullOrEmpty()) {
                     Toast.makeText(this@WeatherActivity, "Erreur: ${s.error}", Toast.LENGTH_SHORT).show()
                 }
 
-                // Mettre titre de l'action bar = ville (si tu veux)
                 supportActionBar?.title = s.city ?: getString(R.string.app_name)
             }
         }

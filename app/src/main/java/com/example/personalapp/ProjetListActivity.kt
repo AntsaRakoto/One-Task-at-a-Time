@@ -55,11 +55,14 @@ class ProjetListActivity : AppCompatActivity() {
     }
 
     private suspend fun loadProjets() {
-        // exécution en IO
+        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val currentUserId = prefs.getLong("current_user_id", -1L)
+
         val projets = withContext(Dispatchers.IO) {
-            db.projetDao().getAllProjetsWithUser()
+            db.projetDao().getProjetsWithUserForUser(currentUserId)
         }
-        adapter.submitList(projets.toList())
+
+        adapter.submitList(projets)
     }
 
     // Adapter RecyclerView simple
@@ -97,7 +100,6 @@ class ProjetListActivity : AppCompatActivity() {
                     vb.tvProjetUser.paintFlags = vb.tvProjetUser.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
                     vb.btnComplete.isEnabled = false
                     vb.btnComplete.alpha = 0.5f
-                    // empêcher l'ouverture du détail si tu veux
                     vb.root.isClickable = false
                 } else {
                     // Normal
@@ -134,7 +136,6 @@ class ProjetListActivity : AppCompatActivity() {
                         withContext(Dispatchers.IO) {
                             db.projetDao().update(updatedProjet)
                         }
-                        // Recharger la liste (appel suspend)
                         loadProjets()
                     }
                 }

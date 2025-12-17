@@ -62,4 +62,19 @@ interface ProjetDao {
         ORDER BY p.name
     """)
     suspend fun getAllProjetsWithUser(): List<ProjetWithUser>
+
+    @Query("""
+    SELECT p.id as projetId,
+           p.name as projetName,
+           p.durationMinutes as durationMinutes,
+           p.userId as userId,
+           u.userName as userName,
+           p.isCompleted as isCompleted
+    FROM projets p
+    INNER JOIN users u ON p.userId = u.id
+    WHERE p.userId = :userId
+    ORDER BY p.name
+""")
+    suspend fun getProjetsWithUserForUser(userId: Long): List<ProjetWithUser>
+
 }

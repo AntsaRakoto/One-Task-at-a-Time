@@ -26,9 +26,9 @@ class TacheAdapter(
         fun bind(t: Tache) {
             title.text = t.name
             duration.text = "${t.durationMinutes} min"
-            cbDone.isChecked = t.completed
 
-            // clic sur item -> ouvrir timer
+            cbDone.setOnCheckedChangeListener(null)
+            cbDone.isChecked = t.completed
 
             itemView.setOnClickListener {
                 if (!t.completed) {
@@ -37,7 +37,6 @@ class TacheAdapter(
                     Toast.makeText(itemView.context, "Cette tâche est déjà terminée.", Toast.LENGTH_SHORT).show()
                 }
             }
-
 
             if (t.completed) {
                 title.paintFlags = title.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
@@ -48,7 +47,9 @@ class TacheAdapter(
             // changement d'état "terminé"
             cbDone.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked != t.completed) {
+                    cbDone.isEnabled = false
                     onCheckedChange(t, isChecked)
+
                 }
             }
         }
@@ -68,5 +69,15 @@ class TacheAdapter(
     fun updateList(newList: List<Tache>) {
         items = newList
         notifyDataSetChanged()
+    }
+
+    fun updateItem(updated: Tache) {
+        val index = items.indexOfFirst { it.id == updated.id }
+        if (index != -1) {
+            val mutable = items.toMutableList()
+            mutable[index] = updated
+            items = mutable
+            notifyItemChanged(index)
+        }
     }
 }
